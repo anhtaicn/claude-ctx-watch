@@ -29,6 +29,8 @@ work:
   ████░░░░░░░░░░░░░░░░░░   189.0k  19% x closed
 ```
 
+*Hướng dẫn tiếng Việt: [HUONG-DAN.md](HUONG-DAN.md).*
+
 One row per session. You glance at it and know which window to wrap up, which one to leave running,
 and whether right now is a bad moment to spawn subagents.
 
