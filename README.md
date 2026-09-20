@@ -1,8 +1,20 @@
 # Claude Code — Context Watch
 
-Claude Code shows the context window of **the session you are looking at**. It shows nothing about
-the other four windows you left open, and nothing about what they are costing you. This pack adds
-a small watcher that sits in a side terminal and answers both questions at once:
+**See the context window and the token burn of every Claude Code session on your machine, from one
+side terminal.**
+
+If you keep more than one Claude Code window open, two numbers decide how your day goes and neither
+one is on screen:
+
+- **Which window is about to run out of context.** `/context` answers for the window you are typing
+  in, and only when you stop and ask it. The others say nothing until one of them silently
+  auto-compacts in the middle of a task you cared about.
+- **What all of them together are doing to your quota.** Claude Code never adds spend up across
+  sessions. A subagent fan-out in a window you are not watching can drain a 5-hour quota while you
+  are away from the keyboard — and afterwards nothing tells you which window did it.
+
+Context Watch puts both on screen, refreshed every 5 seconds, in a terminal you park beside your
+work:
 
 ```
 19:08:15  burn 5h 4.7M | 10m 692.4k
@@ -17,8 +29,11 @@ a small watcher that sits in a side terminal and answers both questions at once:
   ████░░░░░░░░░░░░░░░░░░   189.0k  19% x closed
 ```
 
-One row per session, refreshed every 5 seconds. Stdlib Python only — no `pip install`, no `jq`,
-no daemon. It reads the transcript files Claude Code already writes.
+One row per session. You glance at it and know which window to wrap up, which one to leave running,
+and whether right now is a bad moment to spawn subagents.
+
+Stdlib Python only — no `pip install`, no `jq`, no daemon, no background service. It reads the
+transcript files Claude Code already writes to disk.
 
 ---
 
@@ -198,6 +213,15 @@ logging subagent spawns to `~/.claude/hooks/state/spawns.jsonl`.
 | Percentages look wrong, `win?` shown | Unknown model. Add it to `WINDOWS` or set `CLAUDE_CTX_WINDOW` |
 | Boxes instead of bars | Terminal has no UTF-8; the script falls back to `#` and `.` when it detects that, force it with `--no-color` and a chcp 65001 shell |
 | `burn n/a` in the header | `statusline-burn.py` is not at `~/.claude/statusline-burn.py` |
+
+---
+
+## Related
+
+[**claude-global-rules**](https://github.com/anhtaicn/claude-global-rules) — the global `CLAUDE.md`
+this was built alongside, with the measured cost model behind these numbers and
+`hooks/agent-fanout-guard.py`, which *stops* a runaway fan-out instead of only showing it to you.
+`statusline-burn.py` ships in both repos; it is the same file, so installing both is harmless.
 
 ---
 
