@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Install the context-watch pack into ~/.claude and wire it into settings.json.
 
-Copies four files, then adds two hook entries and one statusline entry to
+Copies five files, then adds two hook entries and one statusline entry to
 settings.json. Everything it overwrites is backed up next to the original with a
 timestamp suffix; nothing is deleted. Run with --dry-run to see the plan first.
 
@@ -22,6 +22,7 @@ STAMP = time.strftime("%Y%m%d-%H%M%S")
 # source -> destination, relative to this folder and to ~/.claude
 FILES = [
     ("ctx-watch.py", "ctx-watch.py"),
+    ("ctx-floor.py", "ctx-floor.py"),
     ("statusline-burn.py", "statusline-burn.py"),
     (os.path.join("hooks", "session-pointer.py"), os.path.join("hooks", "session-pointer.py")),
     (os.path.join("commands", "burn.md"), os.path.join("commands", "burn.md")),

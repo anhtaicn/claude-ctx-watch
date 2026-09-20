@@ -2,7 +2,22 @@
 
 Bản tiếng Anh đầy đủ nằm ở [README.md](README.md). File này chỉ để bạn chạy được trong năm phút.
 
-## Nó giải quyết chuyện gì
+## Vì sao có bộ này
+
+Bản desktop app nạp sẵn bộ công cụ riêng của nó vào mọi phiên, và bạn trả cho phần đó trước khi gõ
+chữ đầu tiên. Đo bằng `ctx-floor.py` trên máy tôi, 11 phiên từ 18 đến 20 tháng 9 năm 2026, **sàn
+context** — phần đã nằm sẵn trong cửa sổ ở lượt trả lời đầu tiên — chạy từ **107.452 đến 124.902
+token, trung vị 117.737**. Sàn không phải trả một lần: nó nằm dưới mọi lượt sau đó dưới dạng cache
+read, nên đây là con số nhân với tất cả những gì bạn làm tiếp.
+
+Mở đúng dự án đó bằng extension VS Code: **70.623**. Cùng kho mã, cùng file `CLAUDE.md`, cùng ngày,
+chỉ đổi mỗi client — **nhẹ hơn 36.829 token, mất đi một phần ba cái sàn**, ở mọi lượt của phiên.
+
+Nhưng đổi chỗ thì mất một thứ: cửa sổ theo dõi context tiện lợi của app ở lại trong app, còn
+statusline tự viết thì không hiện trong khung extension. Tức là con số bạn chuyển client để hạ
+xuống cũng chính là con số bạn không còn nhìn thấy nữa. Bộ này sinh ra để lấy lại phần nhìn thấy đó
+từ bên ngoài mọi client — và lấy lại nhiều hơn phần đã mất: không phải một cửa sổ, mà mọi phiên
+đang chạy trên máy.
 
 Claude Code chỉ báo context của **cửa sổ bạn đang gõ**, và chỉ khi bạn gõ `/context` để hỏi. Ba cửa
 sổ còn lại thì im lặng cho tới lúc một trong số đó tự nén ngữ cảnh giữa chừng. Tổng mức đốt quota
@@ -76,6 +91,18 @@ từ 75%. `● live` là còn chạy, `● busy` là đang giữa lượt, `x cl
 Thấy chữ `win?` màu đỏ nghĩa là model đó chưa có trong bảng kích thước cửa sổ nên phần trăm chỉ là
 ước lượng trên mốc 200k — con số token thì luôn đúng. Sửa bằng cách thêm model vào `WINDOWS` trong
 `ctx-watch.py`, hoặc đặt biến môi trường `CLAUDE_CTX_WINDOW` trước khi chạy.
+
+## Tự đo sàn context trên máy bạn
+
+```powershell
+python ctx-floor.py
+```
+
+Lệnh này in sàn context của từng phiên, kèm client và dự án, rồi tổng hợp min / trung vị / max theo
+client. Hai lưu ý để đọc đúng: **chỉ các dòng cùng một dự án mới so sánh được client với nhau**, vì
+`CLAUDE.md`, MCP server và skill cũng đẩy sàn lên; và phía VS Code trong số liệu của tôi mới có
+**một phiên**, đủ để thấy cơ chế chứ chưa đủ để gọi là trung bình. Chạy trên máy bạn sẽ ra số của
+bạn — đó mới là con số đáng tin với bạn.
 
 ## Gỡ ra
 

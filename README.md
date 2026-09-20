@@ -3,8 +3,22 @@
 **See the context window and the token burn of every Claude Code session on your machine, from one
 side terminal.**
 
-If you keep more than one Claude Code window open, two numbers decide how your day goes and neither
-one is on screen:
+## Why it exists
+
+The desktop app loads its own tool surface into every session, and you pay for that before you type
+a word. Measured on this machine with `ctx-floor.py` across 11 sessions (18–20 Sep 2026), the
+**context floor** — what is already in the window at the first assistant turn — ran **107,452 to
+124,902 tokens, median 117,737**. A floor is not paid once. It sits underneath every later turn of
+that session as cache read, so it is the one number that multiplies by everything else you do.
+
+Opening the same project through the VS Code extension instead: **70,623**. Same repo, same
+`CLAUDE.md`, same day, only the client changed — **36,829 tokens lighter, a third of the floor
+gone**, on every turn of the session.
+
+That move has a price, and this repo is the price. The app's context view stays in the app, and the
+custom statusline does not render inside the extension pane — so the number you switched clients to
+lower is exactly the number you can no longer see. Context Watch gives it back from outside any
+client, and gives back more than was lost: not one window, but every session on the machine.
 
 - **Which window is about to run out of context.** `/context` answers for the window you are typing
   in, and only when you stop and ask it. The others say nothing until one of them silently
@@ -13,8 +27,7 @@ one is on screen:
   sessions. A subagent fan-out in a window you are not watching can drain a 5-hour quota while you
   are away from the keyboard — and afterwards nothing tells you which window did it.
 
-Context Watch puts both on screen, refreshed every 5 seconds, in a terminal you park beside your
-work:
+Both, refreshed every 5 seconds, in a terminal you park beside your work:
 
 ```
 19:08:15  burn 5h 4.7M | 10m 692.4k
@@ -88,7 +101,7 @@ python install.py --dry-run
 python install.py
 ```
 
-The installer copies four files into `~/.claude/`, backs up anything it overwrites with a
+The installer copies five files into `~/.claude/`, backs up anything it overwrites with a
 timestamp suffix, and adds the hook + statusline entries to `settings.json`. It never deletes, and
 it refuses to take over `statusLine` if another command already owns it — it prints the line for
 you to paste instead. `--no-hooks` and `--no-statusline` skip either half.
@@ -98,6 +111,7 @@ Or do it by hand:
 | File in this repo | Copy to | Wiring needed |
 |---|---|---|
 | `ctx-watch.py` | `~/.claude/ctx-watch.py` | none — you run it yourself |
+| `ctx-floor.py` | `~/.claude/ctx-floor.py` | none — a one-shot report, not a watcher |
 | `hooks/session-pointer.py` | `~/.claude/hooks/session-pointer.py` | `SessionStart` + `UserPromptSubmit` hooks |
 | `statusline-burn.py` | `~/.claude/statusline-burn.py` | `statusLine` |
 | `commands/burn.md` | `~/.claude/commands/burn.md` | none — replace `__CLAUDE_HOME__` with your real path |
@@ -170,6 +184,36 @@ Anything else is assumed to be 200k and flagged `win?` so you know the percentag
 token count itself is always exact. Two ways to fix a wrong guess: add the model id to `WINDOWS`,
 or export `CLAUDE_CTX_WINDOW=1000000` before starting the watcher to force a window for the whole
 run.
+
+---
+
+## Measure your own floor
+
+The number in *Why it exists* is not a claim you have to take on trust — it is one command on your
+own transcripts:
+
+```bash
+python ctx-floor.py
+```
+
+```
+    FLOOR  DAY         CLIENT          PROJECT                             SESSION
+   70,623  2026-09-20  vscode          …sieusay-Agency-AEO-First           aeo-first-82
+  107,452  2026-09-20  desktop         …sieusay-Agency-AEO-First           Kiểm tra kết quả nghiên cứu
+  117,737  2026-09-19  desktop         …Documents-my-website               Lô 5 và 6
+  124,902  2026-09-19  desktop         …Documents-my-website               Kết quả audit
+
+desktop        n=11  min 107,452   median 117,737   max 124,902
+vscode         n=1   min 70,623    median 70,623    max 70,623
+```
+
+Two honest caveats, because the tool prints them but a reader skims them. **Only rows from the same
+project compare clients** — `CLAUDE.md`, MCP servers and skills move the floor as much as the client
+does; the pair above is the same repo on the same day, which is why it is the pair quoted. And the
+VS Code side is **n = 1**: enough to show the mechanism, not enough to publish as an average. Run it
+on your own machine and you will get your own numbers, which is the point.
+
+`--all` includes sessions the index no longer knows about; those rows have no client and no name.
 
 ---
 
